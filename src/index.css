@@ -1,0 +1,135 @@
+@import 'tailwindcss';
+
+:root,
+[data-theme='dark'] {
+  --bg-app: #0b141a;
+  --bg-sidebar: #111b21;
+  --bg-header: #202c33;
+  --bg-hover: #202c33;
+  --bg-active: #2a3942;
+  --bg-search: #202c33;
+  --bg-chat: #0b141a;
+  --bg-panel: #111b21;
+  --bg-composer: #202c33;
+  --bg-own: #005c4b;
+  --bg-other: #202c33;
+  --bg-thread-card: #1a252c;
+  --text: #e9edef;
+  --text-muted: #8696a0;
+  --text-own: #e9edef;
+  --accent: #00a884;
+  --accent-soft: rgba(0, 168, 132, 0.16);
+  --unread: #00a884;
+  --border: #2a3942;
+  --rail: #2a3942;
+  --danger: #f15c6d;
+  --shadow: 0 1px 0.5px rgba(11, 20, 26, 0.3);
+  --chat-doodle: rgba(255, 255, 255, 0.028);
+}
+
+[data-theme='light'] {
+  --bg-app: #f0f2f5;
+  --bg-sidebar: #ffffff;
+  --bg-header: #f0f2f5;
+  --bg-hover: #f5f6f6;
+  --bg-active: #f0f2f5;
+  --bg-search: #f0f2f5;
+  --bg-chat: #efeae2;
+  --bg-panel: #ffffff;
+  --bg-composer: #f0f2f5;
+  --bg-own: #d9fdd3;
+  --bg-other: #ffffff;
+  --bg-thread-card: #f7f8fa;
+  --text: #111b21;
+  --text-muted: #667781;
+  --text-own: #111b21;
+  --accent: #008069;
+  --accent-soft: rgba(0, 128, 105, 0.12);
+  --unread: #25d366;
+  --border: #e9edef;
+  --rail: #d1d7db;
+  --danger: #e75a6a;
+  --shadow: 0 1px 0.5px rgba(11, 20, 26, 0.13);
+  --chat-doodle: rgba(0, 0, 0, 0.035);
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family:
+    'Segoe UI',
+    'Helvetica Neue',
+    Helvetica,
+    Arial,
+    sans-serif;
+  background: var(--bg-app);
+  color: var(--text);
+  overflow: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+textarea,
+input,
+select {
+  font: inherit;
+}
+
+.chat-canvas {
+  background-color: var(--bg-chat);
+  background-image:
+    radial-gradient(var(--chat-doodle) 1.1px, transparent 1.1px),
+    radial-gradient(var(--chat-doodle) 1.1px, transparent 1.1px);
+  background-size: 22px 22px;
+  background-position:
+    0 0,
+    11px 11px;
+}
+
+.bubble {
+  box-shadow: var(--shadow);
+}
+
+.bubble-own {
+  background: var(--bg-own);
+  color: var(--text-own);
+}
+
+.bubble-other {
+  background: var(--bg-other);
+  color: var(--text);
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--text-muted) 45%, transparent)
+    transparent;
+}
+
+.thread-indent {
+  border-left: 2px solid var(--rail);
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.enter-msg {
+  animation: fade-up 160ms ease-out;
+}
