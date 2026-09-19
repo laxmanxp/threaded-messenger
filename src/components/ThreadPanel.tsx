@@ -97,8 +97,10 @@ export function ThreadPanel({ onClose }: { onClose: () => void }) {
     replyCount,
   } = useMessenger()
   const scroller = useRef<HTMLDivElement>(null)
+  const prevCount = useRef(state.messages.length)
   const root = state.messages.find((m) => m.id === state.activeThreadRootId)
   const replies = root ? childMessages(root.id) : []
+  const nestedCount = root ? replyCount(root.id) : 0
   const rootAuthor = root ? userById(root.authorId) : undefined
   const replyTarget = state.replyToId
     ? state.messages.find((m) => m.id === state.replyToId)
@@ -121,8 +123,17 @@ export function ThreadPanel({ onClose }: { onClose: () => void }) {
   useEffect(() => {
     const el = scroller.current
     if (!el) return
-    el.scrollTop = el.scrollHeight
-  }, [replies.length, state.activeThreadRootId, state.messages.length])
+    el.scrollTop = 0
+  }, [state.activeThreadRootId])
+
+  useEffect(() => {
+    const el = scroller.current
+    if (!el) return
+    if (state.messages.length > prevCount.current) {
+      el.scrollTop = el.scrollHeight
+    }
+    prevCount.current = state.messages.length
+  }, [state.messages.length])
 
   if (!root) return null
 
@@ -132,11 +143,9 @@ export function ThreadPanel({ onClose }: { onClose: () => void }) {
         <div>
           <div className="text-[16px] font-semibold">Thread</div>
           <div className="text-[12.5px] text-[var(--text-muted)]">
-            {replies.length === 0
+            {nestedCount === 0
               ? 'No nested replies yet'
-              : `${replyCount(root.id)} nested ${
-                  replyCount(root.id) === 1 ? 'reply' : 'replies'
-                }`}
+              : `${nestedCount} nested ${nestedCount === 1 ? 'reply' : 'replies'}`}
           </div>
         </div>
         <button
@@ -191,7 +200,9 @@ export function ThreadPanel({ onClose }: { onClose: () => void }) {
       </div>
       <Composer
         placeholder="Reply in thread"
-        contextLabel={contextLabel}
+        contextLabel={
+          replyTarget && replyTarget.id !== root.id ? contextLabel : null
+        }
         autoFocus
         onClearContext={
           replyTarget && replyTarget.id !== root.id

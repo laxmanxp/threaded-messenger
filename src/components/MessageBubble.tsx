@@ -46,7 +46,7 @@ export function MessageBubble({
       </div>
       <div
         className={`mt-1 flex items-center gap-2 text-[12.5px] ${
-          isOwn ? 'flex-row-reverse' : ''
+          isOwn ? 'justify-end' : ''
         }`}
       >
         <button
