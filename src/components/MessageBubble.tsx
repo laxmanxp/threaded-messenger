@@ -1,5 +1,6 @@
 import { formatClock } from '../lib/format'
 import type { Message, User } from '../types'
+import { MessageAttachments } from './Attachments'
 
 export function MessageBubble({
   message,
@@ -37,9 +38,12 @@ export function MessageBubble({
             {author.name}
           </div>
         ) : null}
-        <p className="whitespace-pre-wrap break-words text-[14.8px] leading-[1.45]">
-          {message.body}
-        </p>
+        {message.body ? (
+          <p className="whitespace-pre-wrap break-words text-[14.8px] leading-[1.45]">
+            {message.body}
+          </p>
+        ) : null}
+        <MessageAttachments items={message.attachments ?? []} />
         <div className="mt-0.5 flex items-center justify-end gap-2 text-[11px] text-[var(--text-muted)]">
           <span>{formatClock(message.createdAt)}</span>
         </div>

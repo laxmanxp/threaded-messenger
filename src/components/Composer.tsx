@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
+import { useEffect, useRef, useState, type DragEvent, type KeyboardEvent } from 'react'
+import {
+  filesToAttachments,
+  MAX_ATTACHMENTS,
+} from '../lib/attachments'
+import type { Attachment } from '../types'
+import { PendingAttachments } from './Attachments'
 
 export function Composer({
   placeholder,
@@ -10,21 +16,37 @@ export function Composer({
   placeholder: string
   contextLabel?: string | null
   onClearContext?: () => void
-  onSend: (body: string) => void
+  onSend: (body: string, attachments: Attachment[]) => void
   autoFocus?: boolean
 }) {
   const [value, setValue] = useState('')
+  const [pending, setPending] = useState<Attachment[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [dragging, setDragging] = useState(false)
   const ref = useRef<HTMLTextAreaElement>(null)
+  const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (autoFocus) ref.current?.focus()
   }, [autoFocus, contextLabel])
 
+  async function addFiles(fileList: FileList | File[]) {
+    setBusy(true)
+    const { attachments, errors } = await filesToAttachments(fileList, pending.length)
+    setPending((cur) => [...cur, ...attachments])
+    setError(errors[0] ?? null)
+    setBusy(false)
+    if (fileRef.current) fileRef.current.value = ''
+  }
+
   function submit() {
     const body = value.trim()
-    if (!body) return
-    onSend(body)
+    if (!body && !pending.length) return
+    onSend(body, pending)
     setValue('')
+    setPending([])
+    setError(null)
     const el = ref.current
     if (el) el.style.height = 'auto'
   }
@@ -36,8 +58,24 @@ export function Composer({
     }
   }
 
+  function onDrop(e: DragEvent) {
+    e.preventDefault()
+    setDragging(false)
+    if (e.dataTransfer.files.length) void addFiles(e.dataTransfer.files)
+  }
+
   return (
-    <div className="border-t border-[var(--border)] bg-[var(--bg-composer)] px-3 py-2.5">
+    <div
+      className={`border-t border-[var(--border)] bg-[var(--bg-composer)] px-3 py-2.5 ${
+        dragging ? 'outline outline-2 outline-[var(--accent)] outline-offset-[-2px]' : ''
+      }`}
+      onDragOver={(e) => {
+        e.preventDefault()
+        setDragging(true)
+      }}
+      onDragLeave={() => setDragging(false)}
+      onDrop={onDrop}
+    >
       {contextLabel ? (
         <div className="mb-2 flex items-center justify-between gap-2 rounded-lg bg-[var(--accent-soft)] px-3 py-1.5 text-[13px] text-[var(--accent)]">
           <span className="min-w-0 truncate">
@@ -55,7 +93,35 @@ export function Composer({
           ) : null}
         </div>
       ) : null}
+      <PendingAttachments
+        items={pending}
+        onRemove={(id) => setPending((cur) => cur.filter((a) => a.id !== id))}
+      />
+      {error ? (
+        <p className="mb-2 text-[12.5px] text-[var(--danger)]">{error}</p>
+      ) : null}
       <div className="flex items-end gap-2">
+        <input
+          ref={fileRef}
+          type="file"
+          multiple
+          className="hidden"
+          onChange={(e) => {
+            if (e.target.files?.length) void addFiles(e.target.files)
+          }}
+        />
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          disabled={busy || pending.length >= MAX_ATTACHMENTS}
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--accent)] disabled:opacity-40"
+          aria-label="Attach files"
+          title="Attach files"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5a2.5 2.5 0 0 1 5 0v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5a2.5 2.5 0 0 0 5 0V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z" />
+          </svg>
+        </button>
         <textarea
           ref={ref}
           rows={1}
@@ -73,7 +139,7 @@ export function Composer({
         <button
           type="button"
           onClick={submit}
-          disabled={!value.trim()}
+          disabled={busy || (!value.trim() && !pending.length)}
           className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[var(--accent)] text-white transition enabled:hover:brightness-110 disabled:opacity-40"
           aria-label="Send"
         >

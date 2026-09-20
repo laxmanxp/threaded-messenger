@@ -27,8 +27,9 @@ npm run preview
 - The composer in a thread shows **Replying to …**. Clear it to reply to the thread root.
 - **Switch user** (Maya, Jordan, Sam) to simulate a small team. Unread badges follow the active user.
 - **Light / Dark** themes. **Reset** restores the original demo data.
+- **Attachments:** paperclip in the chat and thread composers. Images show as thumbnails (tap to preview); other files show name + size and download on click. You can attach up to **6 files**, **3 MB each**. Images are resized/compressed to JPEG/PNG before saving.
 
-The Design Squad chat opens with a rich nested thread on first load so the app never feels empty.
+The Design Squad chat opens with a rich nested thread on first load so the app never feels empty. Seed data includes a screenshot in the main chat and a CSV in the launch thread.
 
 ## Stack
 
@@ -36,4 +37,4 @@ Vite + React + TypeScript + Tailwind CSS v4. State lives in `src/store/messenger
 
 ## Data model
 
-`Message` (`src/types.ts`): `id`, `conversationId`, `authorId`, `parentId` (`null` for a chat-level message), `body`, `createdAt`.
+`Message` (`src/types.ts`): `id`, `conversationId`, `authorId`, `parentId` (`null` for a chat-level message), `body`, `createdAt`, `attachments` (image or file, stored as data URLs).

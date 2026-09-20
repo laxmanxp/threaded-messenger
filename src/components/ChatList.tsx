@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { conversationHue, conversationInitials, conversationTitle } from '../lib/conversation'
-import { formatListTime, previewText } from '../lib/format'
+import { previewAttachments } from '../lib/attachments'
+import { formatListTime } from '../lib/format'
 import { useMessenger } from '../store/messengerStore'
 import { Avatar } from './Avatar'
 
@@ -37,9 +38,13 @@ export function ChatList({
       .filter((row) => {
         if (!q) return true
         const author = row.latest ? userById(row.latest.authorId)?.name : ''
+        const attNames = (row.latest?.attachments ?? [])
+          .map((a) => a.name)
+          .join(' ')
         return (
           row.title.toLowerCase().includes(q) ||
           (row.latest?.body ?? '').toLowerCase().includes(q) ||
+          attNames.toLowerCase().includes(q) ||
           (author ?? '').toLowerCase().includes(q)
         )
       })
@@ -121,7 +126,7 @@ export function ChatList({
                       }`}
                     >
                       {latest
-                        ? `${nested}${author ? `${author}: ` : ''}${previewText(latest.body)}`
+                        ? `${nested}${author ? `${author}: ` : ''}${previewAttachments(latest)}`
                         : 'No messages yet'}
                     </p>
                     {row.unread > 0 ? (
