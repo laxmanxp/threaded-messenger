@@ -54,7 +54,7 @@ export default function App() {
             T
           </span>
           <div className="min-w-0">
-            <div className="truncate text-sm font-semibold tracking-wide">
+            <div className="hidden truncate text-sm font-semibold tracking-wide min-[420px]:block">
               Threadly
             </div>
             <div className="hidden truncate text-[11px] text-[var(--text-muted)] sm:block">
@@ -79,7 +79,7 @@ export default function App() {
         <select
           value={state.currentUserId}
           onChange={(e) => switchUser(e.target.value)}
-          className="min-h-11 max-w-[42vw] rounded-md border-0 bg-[var(--bg-search)] px-2 text-[16px] text-[var(--text)] outline-none sm:hidden"
+          className="min-h-11 max-w-[38vw] rounded-md border-0 bg-[var(--bg-search)] px-2 text-[16px] text-[var(--text)] outline-none sm:hidden"
           aria-label="Switch user"
         >
           {state.users.map((u) => (
