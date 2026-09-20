@@ -112,14 +112,23 @@ export async function fileToAttachment(file: File): Promise<AttachmentResult> {
 
   try {
     if (compressible) {
-      const attachment = await compressImage(file)
-      if (attachment.size > MAX_FILE_BYTES) {
-        return {
-          ok: false,
-          error: `${file.name} is still over ${formatBytes(MAX_FILE_BYTES)} after compression.`,
+      try {
+        const attachment = await compressImage(file)
+        if (attachment.size > MAX_FILE_BYTES) {
+          return {
+            ok: false,
+            error: `${file.name} is still over ${formatBytes(MAX_FILE_BYTES)} after compression.`,
+          }
+        }
+        return { ok: true, attachment }
+      } catch {
+        if (file.size > MAX_FILE_BYTES) {
+          return {
+            ok: false,
+            error: `${file.name} could not be compressed and is larger than ${formatBytes(MAX_FILE_BYTES)}.`,
+          }
         }
       }
-      return { ok: true, attachment }
     }
 
     if (file.size > MAX_FILE_BYTES) {
