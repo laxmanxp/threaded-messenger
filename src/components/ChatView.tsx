@@ -128,7 +128,7 @@ export function ChatView({
       </div>
       <Composer
         placeholder="Type a message"
-        onSend={(body) => sendMessage(body, null)}
+        onSend={(body, attachments) => sendMessage(body, null, attachments)}
       />
     </div>
   )

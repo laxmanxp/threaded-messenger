@@ -3,6 +3,7 @@ export type ConversationId = string
 export type MessageId = string
 export type Theme = 'light' | 'dark'
 export type MobilePane = 'list' | 'chat' | 'thread'
+export type AttachmentKind = 'image' | 'file'
 
 export interface User {
   id: UserId
@@ -20,6 +21,15 @@ export interface Conversation {
   hue: number
 }
 
+export interface Attachment {
+  id: string
+  name: string
+  mimeType: string
+  size: number
+  kind: AttachmentKind
+  dataUrl: string
+}
+
 export interface Message {
   id: MessageId
   conversationId: ConversationId
@@ -27,6 +37,7 @@ export interface Message {
   parentId: MessageId | null
   body: string
   createdAt: number
+  attachments: Attachment[]
 }
 
 export interface MessengerSnapshot {

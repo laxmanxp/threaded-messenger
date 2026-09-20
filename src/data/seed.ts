@@ -1,6 +1,6 @@
-import type { Conversation, Message, User } from '../types'
+import type { Attachment, Conversation, Message, User } from '../types'
 
-export const STORAGE_VERSION = 1
+export const STORAGE_VERSION = 2
 
 export const USERS: User[] = [
   { id: 'u_maya', name: 'Maya Chen', handle: 'maya', initials: 'MC', hue: 168 },
@@ -45,6 +45,48 @@ function minutesAgo(mins: number, now: number): number {
   return now - mins * 60_000
 }
 
+function seedShot(id: string): Attachment {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="200" viewBox="0 0 320 200">
+  <rect width="320" height="200" rx="16" fill="#111b21"/>
+  <rect x="16" y="16" width="288" height="40" rx="8" fill="#202c33"/>
+  <circle cx="36" cy="36" r="8" fill="#00a884"/>
+  <rect x="52" y="30" width="120" height="12" rx="4" fill="#8696a0"/>
+  <rect x="40" y="72" width="160" height="72" rx="10" fill="#005c4b"/>
+  <text x="52" y="104" fill="#e9edef" font-family="Segoe UI,sans-serif" font-size="13">Unread badge wrap</text>
+  <text x="52" y="124" fill="#d1d7db" font-family="Segoe UI,sans-serif" font-size="11">375 × 812 · Safari</text>
+  <rect x="216" y="72" width="88" height="28" rx="14" fill="#00a884"/>
+  <text x="232" y="91" fill="#111b21" font-family="Segoe UI,sans-serif" font-size="12" font-weight="700">99+</text>
+</svg>`
+  const dataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
+  return {
+    id,
+    name: 'composer-375.svg',
+    mimeType: 'image/svg+xml',
+    size: svg.length,
+    kind: 'image',
+    dataUrl,
+  }
+}
+
+function seedChecklist(): Attachment {
+  const csv = [
+    'device,width,badge,notes',
+    'iPhone SE,375,wraps,two pills stacked',
+    'iPhone 14,390,ok,after min-width bump',
+    'Pixel 7,412,ok,',
+    'iPad mini,768,ok,desktop layout',
+  ].join('\n')
+  const dataUrl = `data:text/csv;base64,${btoa(csv)}`
+  return {
+    id: 'att_qa_matrix',
+    name: 'qa-device-matrix.csv',
+    mimeType: 'text/csv',
+    size: csv.length,
+    kind: 'file',
+    dataUrl,
+  }
+}
+
 export function buildSeedMessages(now = Date.now()): Message[] {
   const m = (
     id: string,
@@ -53,6 +95,7 @@ export function buildSeedMessages(now = Date.now()): Message[] {
     parentId: string | null,
     body: string,
     mins: number,
+    attachments: Attachment[] = [],
   ): Message => ({
     id,
     conversationId,
@@ -60,6 +103,7 @@ export function buildSeedMessages(now = Date.now()): Message[] {
     parentId,
     body,
     createdAt: minutesAgo(mins, now),
+    attachments,
   })
 
   return [
@@ -101,8 +145,9 @@ export function buildSeedMessages(now = Date.now()): Message[] {
       'c_design',
       'u_sam',
       'm_launch_tokens_desktop',
-      'Catching it on iOS Safari 17.4 too. Screenshot is in the Figma “QA dump” page, frame 12.',
+      'Catching it on iOS Safari 17.4 too. Capture from the 375px frame — attaching it here.',
       172,
+      [seedShot('att_composer_thread')],
     ),
     m(
       'm_launch_tokens_p0',
@@ -141,8 +186,9 @@ export function buildSeedMessages(now = Date.now()): Message[] {
       'c_design',
       'u_sam',
       'm_launch_badge_fix',
-      'Yep — adding it to the device matrix now.',
+      'Yep — matrix is attached. Adding it to the device list now.',
       160,
+      [seedChecklist()],
     ),
     m(
       'm_launch_legal',
@@ -205,8 +251,9 @@ export function buildSeedMessages(now = Date.now()): Message[] {
       'c_design',
       'u_sam',
       null,
-      'Screenshots are in Figma — I’ll export tonight and drop a zip in this chat.',
-      80,
+      'Screenshots are in Figma — dropping the 375 capture here so we don’t hunt for it.',
+      8,
+      [seedShot('att_composer_chat')],
     ),
     m(
       'm_freeze',

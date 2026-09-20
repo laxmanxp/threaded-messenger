@@ -3,6 +3,7 @@ import { formatClock } from '../lib/format'
 import { useMessenger } from '../store/messengerStore'
 import type { Message } from '../types'
 import { Avatar } from './Avatar'
+import { MessageAttachments } from './Attachments'
 import { Composer } from './Composer'
 
 function ThreadNode({
@@ -51,9 +52,12 @@ function ThreadNode({
                 {formatClock(message.createdAt)}
               </span>
             </div>
-            <p className="mt-0.5 whitespace-pre-wrap break-words text-[14.2px] leading-[1.45] text-[var(--text)]">
-              {message.body}
-            </p>
+            {message.body ? (
+              <p className="mt-0.5 whitespace-pre-wrap break-words text-[14.2px] leading-[1.45] text-[var(--text)]">
+                {message.body}
+              </p>
+            ) : null}
+            <MessageAttachments items={message.attachments ?? []} />
             <div className="mt-1 flex items-center gap-2">
               <button
                 type="button"
@@ -177,9 +181,12 @@ export function ThreadPanel({ onClose }: { onClose: () => void }) {
                   {formatClock(root.createdAt)}
                 </span>
               </div>
-              <p className="mt-1 whitespace-pre-wrap break-words text-[14.5px] leading-[1.45]">
-                {root.body}
-              </p>
+              {root.body ? (
+                <p className="mt-1 whitespace-pre-wrap break-words text-[14.5px] leading-[1.45]">
+                  {root.body}
+                </p>
+              ) : null}
+              <MessageAttachments items={root.attachments ?? []} />
             </div>
           </div>
         </article>
@@ -209,7 +216,9 @@ export function ThreadPanel({ onClose }: { onClose: () => void }) {
             ? () => setReplyTo(root.id)
             : undefined
         }
-        onSend={(body) => sendMessage(body, replyTarget?.id ?? root.id)}
+        onSend={(body, attachments) =>
+          sendMessage(body, replyTarget?.id ?? root.id, attachments)
+        }
       />
     </div>
   )

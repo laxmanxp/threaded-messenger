@@ -25,6 +25,7 @@ import type {
   Theme,
   User,
   UserId,
+  Attachment,
 } from '../types'
 
 const STORAGE_KEY = 'threaded-messenger:v1'
@@ -50,7 +51,7 @@ type Action =
   | { type: 'openThread'; rootId: MessageId; replyToId?: MessageId }
   | { type: 'closeThread' }
   | { type: 'setReplyTo'; id: MessageId | null }
-  | { type: 'send'; body: string; parentId: MessageId | null }
+  | { type: 'send'; body: string; parentId: MessageId | null; attachments: Attachment[] }
   | { type: 'switchUser'; id: UserId }
   | { type: 'toggleTheme' }
   | { type: 'toggleCollapse'; id: MessageId }
@@ -89,7 +90,10 @@ function loadState(): StoreState {
     return {
       users: parsed.users,
       conversations: parsed.conversations,
-      messages: parsed.messages,
+      messages: parsed.messages.map((msg) => ({
+        ...msg,
+        attachments: msg.attachments ?? [],
+      })),
       currentUserId: parsed.currentUserId,
       activeConversationId: parsed.activeConversationId,
       activeThreadRootId: parsed.activeThreadRootId,
@@ -117,7 +121,11 @@ function persist(state: StoreState) {
     theme: state.theme,
     collapsedIds: state.collapsedIds,
   }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot))
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot))
+  } catch {
+    // Quota exceeded — keep the session in memory.
+  }
 }
 
 function markRead(state: StoreState, conversationId: ConversationId): StoreState {
@@ -165,7 +173,8 @@ function reducer(state: StoreState, action: Action): StoreState {
     case 'send': {
       const conversationId = state.activeConversationId
       const body = action.body.trim()
-      if (!conversationId || !body) return state
+      const attachments = action.attachments ?? []
+      if (!conversationId || (!body && !attachments.length)) return state
       const msg: Message = {
         id: `m_${crypto.randomUUID()}`,
         conversationId,
@@ -173,6 +182,7 @@ function reducer(state: StoreState, action: Action): StoreState {
         parentId: action.parentId,
         body,
         createdAt: Date.now(),
+        attachments,
       }
       const next = markRead(
         {
@@ -247,7 +257,7 @@ interface StoreApi {
   openThread: (rootId: MessageId, replyToId?: MessageId) => void
   closeThread: () => void
   setReplyTo: (id: MessageId | null) => void
-  sendMessage: (body: string, parentId: MessageId | null) => void
+  sendMessage: (body: string, parentId: MessageId | null, attachments?: Attachment[]) => void
   switchUser: (id: UserId) => void
   toggleTheme: () => void
   toggleCollapse: (id: MessageId) => void
@@ -342,7 +352,8 @@ export function MessengerProvider({ children }: { children: ReactNode }) {
         dispatch({ type: 'openThread', rootId, replyToId }),
       closeThread: () => dispatch({ type: 'closeThread' }),
       setReplyTo: (id) => dispatch({ type: 'setReplyTo', id }),
-      sendMessage: (body, parentId) => dispatch({ type: 'send', body, parentId }),
+      sendMessage: (body, parentId, attachments = []) =>
+        dispatch({ type: 'send', body, parentId, attachments }),
       switchUser: (id) => dispatch({ type: 'switchUser', id }),
       toggleTheme: () => dispatch({ type: 'toggleTheme' }),
       toggleCollapse: (id) => dispatch({ type: 'toggleCollapse', id }),
