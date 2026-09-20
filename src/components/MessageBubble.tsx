@@ -21,7 +21,7 @@ export function MessageBubble({
 }) {
   return (
     <div
-      className={`enter-msg group flex max-w-[min(78%,640px)] flex-col ${
+      className={`enter-msg group flex max-w-[min(88%,640px)] flex-col ${
         isOwn ? 'ml-auto items-end' : 'mr-auto items-start'
       }`}
     >
@@ -49,14 +49,14 @@ export function MessageBubble({
         </div>
       </div>
       <div
-        className={`mt-1 flex items-center gap-2 text-[12.5px] ${
+        className={`mt-1 flex flex-wrap items-center gap-1 text-[13px] ${
           isOwn ? 'justify-end' : ''
         }`}
       >
         <button
           type="button"
           onClick={onReply}
-          className="rounded-md px-1.5 py-0.5 text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--accent)]"
+          className="min-h-11 rounded-md px-3 text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--accent)]"
         >
           Reply
         </button>
@@ -64,7 +64,7 @@ export function MessageBubble({
           <button
             type="button"
             onClick={onOpenThread}
-            className="rounded-md bg-[var(--accent-soft)] px-1.5 py-0.5 font-medium text-[var(--accent)] hover:brightness-110"
+            className="min-h-11 rounded-md bg-[var(--accent-soft)] px-3 font-medium text-[var(--accent)] hover:brightness-110"
           >
             {replyCount} {replyCount === 1 ? 'reply' : 'replies'}
           </button>

@@ -28,7 +28,7 @@ function ThreadNode({
   const isOwn = message.authorId === currentUser.id
   const isTarget = state.replyToId === message.id
   const count = replyCount(message.id)
-  const indent = Math.min(depth, 8) * 14
+  const indent = Math.min(depth, 6) * 10
 
   return (
     <div className="enter-msg" style={{ marginLeft: indent }}>
@@ -58,11 +58,11 @@ function ThreadNode({
               </p>
             ) : null}
             <MessageAttachments items={message.attachments ?? []} />
-            <div className="mt-1 flex items-center gap-2">
+            <div className="mt-1 flex flex-wrap items-center gap-1">
               <button
                 type="button"
                 onClick={() => setReplyTo(message.id)}
-                className="text-[12.5px] font-medium text-[var(--text-muted)] hover:text-[var(--accent)]"
+                className="min-h-11 rounded-md px-3 text-[13px] font-medium text-[var(--text-muted)] hover:text-[var(--accent)]"
               >
                 Reply
               </button>
@@ -70,7 +70,7 @@ function ThreadNode({
                 <button
                   type="button"
                   onClick={() => toggleCollapse(message.id)}
-                  className="text-[12.5px] text-[var(--accent)]"
+                  className="min-h-11 rounded-md px-3 text-[13px] text-[var(--accent)]"
                 >
                   {collapsed
                     ? `Show ${count} ${count === 1 ? 'reply' : 'replies'}`
@@ -90,7 +90,13 @@ function ThreadNode({
   )
 }
 
-export function ThreadPanel({ onClose }: { onClose: () => void }) {
+export function ThreadPanel({
+  onClose,
+  sheet = false,
+}: {
+  onClose: () => void
+  sheet?: boolean
+}) {
   const {
     state,
     userById,
@@ -142,28 +148,32 @@ export function ThreadPanel({ onClose }: { onClose: () => void }) {
   if (!root) return null
 
   return (
-    <div className="flex h-full min-h-0 flex-col border-l border-[var(--border)] bg-[var(--bg-panel)]">
-      <header className="flex items-center justify-between gap-2 border-b border-[var(--border)] bg-[var(--bg-header)] px-3 py-2.5">
-        <div>
+    <div
+      className={`flex h-full min-h-0 min-w-0 flex-col bg-[var(--bg-panel)] ${
+        sheet ? '' : 'border-l border-[var(--border)]'
+      }`}
+    >
+      <header className="flex items-center gap-2 border-b border-[var(--border)] bg-[var(--bg-header)] px-2 py-2 pt-[max(0.5rem,env(safe-area-inset-top))] md:px-3 md:pt-2.5">
+        <button
+          type="button"
+          onClick={onClose}
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-full hover:bg-[var(--bg-hover)]"
+          aria-label="Close thread"
+        >
+          {sheet ? '←' : '✕'}
+        </button>
+        <div className="min-w-0 flex-1">
           <div className="text-[16px] font-semibold">Thread</div>
-          <div className="text-[12.5px] text-[var(--text-muted)]">
+          <div className="truncate text-[12.5px] text-[var(--text-muted)]">
             {nestedCount === 0
               ? 'No nested replies yet'
               : `${nestedCount} nested ${nestedCount === 1 ? 'reply' : 'replies'}`}
           </div>
         </div>
-        <button
-          type="button"
-          onClick={onClose}
-          className="grid h-9 w-9 place-items-center rounded-full hover:bg-[var(--bg-hover)]"
-          aria-label="Close thread"
-        >
-          ✕
-        </button>
       </header>
       <div
         ref={scroller}
-        className="scrollbar-thin min-h-0 flex-1 overflow-y-auto px-3 py-3"
+        className="scrollbar-thin min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 py-3"
       >
         <article className="mb-4 rounded-xl bg-[var(--bg-thread-card)] p-3">
           <div className="flex gap-2">
@@ -210,7 +220,7 @@ export function ThreadPanel({ onClose }: { onClose: () => void }) {
         contextLabel={
           replyTarget && replyTarget.id !== root.id ? contextLabel : null
         }
-        autoFocus
+        autoFocus={!sheet}
         onClearContext={
           replyTarget && replyTarget.id !== root.id
             ? () => setReplyTo(root.id)
