@@ -78,7 +78,7 @@ export function ChatList({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search or start a new chat"
-          className="w-full rounded-lg border-0 bg-[var(--bg-search)] px-3 py-2 text-[14px] text-[var(--text)] outline-none placeholder:text-[var(--text-muted)]"
+          className="min-h-11 w-full rounded-lg border-0 bg-[var(--bg-search)] px-3 py-2 text-[16px] text-[var(--text)] outline-none placeholder:text-[var(--text-muted)] md:text-[14px]"
         />
       </div>
       <div className="scrollbar-thin min-h-0 flex-1 overflow-y-auto">
@@ -105,7 +105,7 @@ export function ChatList({
                   selectConversation(row.conv.id)
                   onOpenChat()
                 }}
-                className={`flex w-full items-center gap-3 border-b border-[var(--border)] px-3 py-3 text-left transition ${
+                className={`flex min-h-[64px] w-full items-center gap-3 border-b border-[var(--border)] px-3 py-3 text-left transition ${
                   active ? 'bg-[var(--bg-active)]' : 'hover:bg-[var(--bg-hover)]'
                 }`}
               >

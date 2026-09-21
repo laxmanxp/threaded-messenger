@@ -31,6 +31,24 @@ npm run preview
 
 The Design Squad chat opens with a rich nested thread on first load so the app never feels empty. Seed data includes a screenshot in the main chat and a CSV in the launch thread.
 
+On phones, the chat list, conversation, and thread are separate screens: pick a chat, then open a thread as a full-screen sheet (back to dismiss). Desktop still uses the three-pane sidebar + chat + thread layout.
+
+## Install as an app (PWA)
+
+Threadly is installable. It caches the app shell so the UI loads offline; your chats still live in `localStorage` on that device.
+
+1. Build and preview (service worker is registered in production and in `npm run dev`):
+
+   ```bash
+   npm run build
+   npm run preview
+   ```
+
+2. Open the preview URL (default [http://localhost:4173](http://localhost:4173)).
+3. In Chrome/Edge: install icon in the address bar, or **Install app** in the menu. On iOS Safari: **Share → Add to Home Screen**.
+
+Browsers only enable install + service workers on **localhost** or **HTTPS**. `npm run dev` is fine for local install testing; a public HTTP host will not be installable.
+
 ## Stack
 
 Vite + React + TypeScript + Tailwind CSS v4. State lives in `src/store/messengerStore.tsx` and is saved under `threaded-messenger:v1`.

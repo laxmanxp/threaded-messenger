@@ -32,7 +32,7 @@ function FileChip({
         <button
           type="button"
           onClick={onRemove}
-          className="grid h-6 w-6 shrink-0 place-items-center rounded-full text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text)]"
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--text)]"
           aria-label={`Remove ${attachment.name}`}
         >
           ✕
@@ -51,9 +51,11 @@ export function PendingAttachments({
 }) {
   if (!items.length) return null
   return (
-    <div className="mb-2 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+    <div className="mb-2 flex flex-wrap gap-1.5">
       {items.map((att) => (
-        <FileChip key={att.id} attachment={att} onRemove={() => onRemove(att.id)} />
+        <div key={att.id} className="min-w-0 max-w-full flex-[1_1_12rem]">
+          <FileChip attachment={att} onRemove={() => onRemove(att.id)} />
+        </div>
       ))}
     </div>
   )

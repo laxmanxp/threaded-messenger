@@ -282,6 +282,10 @@ export function MessengerProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     document.documentElement.dataset.theme = state.theme
     document.documentElement.style.colorScheme = state.theme
+    const color = state.theme === 'dark' ? '#111b21' : '#f0f2f5'
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', color)
   }, [state.theme])
 
   const currentUser = useMemo(

@@ -66,7 +66,7 @@ export function Composer({
 
   return (
     <div
-      className={`border-t border-[var(--border)] bg-[var(--bg-composer)] px-3 py-2.5 ${
+      className={`border-t border-[var(--border)] bg-[var(--bg-composer)] px-3 pt-2.5 pb-[max(0.65rem,env(safe-area-inset-bottom))] ${
         dragging ? 'outline outline-2 outline-[var(--accent)] outline-offset-[-2px]' : ''
       }`}
       onDragOver={(e) => {
@@ -114,7 +114,7 @@ export function Composer({
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={busy || pending.length >= MAX_ATTACHMENTS}
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--accent)] disabled:opacity-40"
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-full text-[var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[var(--accent)] disabled:opacity-40"
           aria-label="Attach files"
           title="Attach files"
         >
@@ -134,13 +134,13 @@ export function Composer({
           }}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
-          className="max-h-[140px] min-h-[44px] flex-1 resize-none rounded-lg border-0 bg-[var(--bg-sidebar)] px-3 py-2.5 text-[15px] text-[var(--text)] outline-none placeholder:text-[var(--text-muted)]"
+          className="min-h-12 max-h-[140px] flex-1 resize-none rounded-lg border-0 bg-[var(--bg-sidebar)] px-3 py-2.5 text-[16px] text-[var(--text)] outline-none placeholder:text-[var(--text-muted)] md:min-h-[44px] md:text-[15px]"
         />
         <button
           type="button"
           onClick={submit}
           disabled={busy || (!value.trim() && !pending.length)}
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[var(--accent)] text-white transition enabled:hover:brightness-110 disabled:opacity-40"
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[var(--accent)] text-white transition enabled:hover:brightness-110 disabled:opacity-40"
           aria-label="Send"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">

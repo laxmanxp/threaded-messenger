@@ -70,11 +70,11 @@ export function ChatView({
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-[var(--bg-chat)]">
-      <header className="flex items-center gap-3 border-b border-[var(--border)] bg-[var(--bg-header)] px-3 py-2.5">
+      <header className="flex items-center gap-2 border-b border-[var(--border)] bg-[var(--bg-header)] px-2 py-2 md:gap-3 md:px-3 md:py-2.5">
         <button
           type="button"
           onClick={onBack}
-          className="grid h-9 w-9 place-items-center rounded-full text-[var(--text)] hover:bg-[var(--bg-hover)] md:hidden"
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-[var(--text)] hover:bg-[var(--bg-hover)] md:hidden"
           aria-label="Back to chats"
         >
           ←
@@ -89,7 +89,7 @@ export function ChatView({
       </header>
       <div
         ref={scroller}
-        className="chat-canvas scrollbar-thin min-h-0 flex-1 overflow-y-auto px-4 py-3 md:px-8"
+        className="chat-canvas scrollbar-thin min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 py-3 md:px-8"
       >
         <div className="mx-auto flex max-w-3xl flex-col gap-3">
           {messages.map((msg, index) => {

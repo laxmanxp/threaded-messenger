@@ -2,7 +2,7 @@ export type UserId = string
 export type ConversationId = string
 export type MessageId = string
 export type Theme = 'light' | 'dark'
-export type MobilePane = 'list' | 'chat' | 'thread'
+export type MobilePane = 'list' | 'chat'
 export type AttachmentKind = 'image' | 'file'
 
 export interface User {
