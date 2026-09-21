@@ -1,8 +1,6 @@
 import {
-  createContext,
   createElement,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useReducer,
@@ -27,6 +25,8 @@ import type {
   UserId,
   Attachment,
 } from '../types'
+import { StoreContext, useMessenger, type StoreApi } from './messengerContext'
+export { useMessenger }
 
 const STORAGE_KEY = 'threaded-messenger:v1'
 
@@ -249,29 +249,6 @@ function childrenOf(messages: Message[], parentId: MessageId): Message[] {
     .sort((a, b) => a.createdAt - b.createdAt)
 }
 
-interface StoreApi {
-  state: StoreState
-  currentUser: User
-  activeConversation: Conversation | null
-  selectConversation: (id: ConversationId) => void
-  openThread: (rootId: MessageId, replyToId?: MessageId) => void
-  closeThread: () => void
-  setReplyTo: (id: MessageId | null) => void
-  sendMessage: (body: string, parentId: MessageId | null, attachments?: Attachment[]) => void
-  switchUser: (id: UserId) => void
-  toggleTheme: () => void
-  toggleCollapse: (id: MessageId) => void
-  resetDemo: () => void
-  userById: (id: UserId) => User | undefined
-  topLevelMessages: (conversationId: ConversationId) => Message[]
-  childMessages: (parentId: MessageId) => Message[]
-  replyCount: (rootId: MessageId) => number
-  unreadCount: (conversationId: ConversationId) => number
-  latestMessage: (conversationId: ConversationId) => Message | undefined
-}
-
-const StoreContext = createContext<StoreApi | null>(null)
-
 export function MessengerProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, undefined, loadState)
 
@@ -383,10 +360,4 @@ export function MessengerProvider({ children }: { children: ReactNode }) {
   )
 
   return createElement(StoreContext.Provider, { value: api }, children)
-}
-
-export function useMessenger(): StoreApi {
-  const ctx = useContext(StoreContext)
-  if (!ctx) throw new Error('useMessenger must be used within MessengerProvider')
-  return ctx
 }
